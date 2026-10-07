@@ -1,0 +1,22 @@
+PHẦN 1: PHÂN TÍCH LỖI SAI
+
+1. Lỗi 1 (Lệnh 1:mkdir Shopee Projects): Tạo thư mục có khoảng trắng không dùng dấu ngoặc kép.
+   -Vì tên "Shopee Projects" chứa khoảng trắng nhưng không được đặt trong dấu ngoặc kép (""), PowerShell sẽ hiểu đây là 2 đối tượng tách biệt. Do đó, lệnh sẽ tạo ra 2 thư mục độc lập thay vì 1 thư mục tên "Shopee Projects".
+
+2. Lỗi 2 (Lệnh 2:cd Shopee Projects): Di chuyển vào thư mục chứa khoảng trắng không bọc ngoặc kép.
+   -Lệnh cd nhận đường dẫn dưới dạng 1 tham số. Do không bọc ngoặc kép, PowerShell hiểu "Projects" là một tham số thừa không hợp lệ và báo lỗi "A positional parameter cannot be found that accepts argument 'Projects'." Ngoài ra, do thư mục "Shopee Projects" chưa được tạo ở lệnh 1 nên hệ thống cũng sẽ báo lỗi không tìm thấy đường dẫn.
+
+3. Lỗi 3 (Lệnh 3:mkdir src\assets\images): Thực hiện lệnh khi đang ở sai vị trí thư mục làm việc.
+   -Do lệnh 2 (cd) gặp lỗi nên đường dẫn hiện tại vẫn là C:\Users\Student chứ chưa vào trong thư mục dự án. Việc chạy lệnh này sẽ vô tình tạo ra cấu trúc thư mục src\assets\images ngay tại thư mục người dùng C:\Users\Student\src\assets\images chứ không phải bên trong "Shopee Projects".
+
+4. Lỗi 4 (Lệnh 4:Copy-Item src -Destination src-backup -Recurse): Lỗi logic về đường dẫn đích và vị trí đứng.
+   -Do vẫn đang đứng ở C:\Users\Student, lệnh này sẽ sao chép toàn bộ thư mục src của người dùng hệ thống ra src-backup ngay tại C:\Users\Student, hoàn toàn sai với mục tiêu quản lý tập tin của dự án "Shopee Projects".
+
+PHẦN 2: HOÀN THIỆN (CHUỖI CÂU LỆNH CHUẨN 3 DÒNG)
+mkdir "Shopee Projects\src\assets\images"
+cd "Shopee Projects"
+Copy-Item "src" -Destination "src-backup" -Recurse
+Giả‌i thích 3 dòng lệnh:
+- Dòng 1: Đặt tên thư mục trong dấu ngoặc kép giúp xử lý khoảng trắng. Lệnh mkdir trong PowerShell tự động khởi tạo toàn bộ các thư mục lồng nhau (Shopee Projects -> src -> assets -> images) chỉ trong 1 dòng lệnh.
+- Dòng 2: Di chuyển chính xác vào thư mục "Shopee Projects" vừa tạo.
+- Dòng 3: Sao chép thư mục "src" cùng toàn bộ nội dung bên trong (nhờ tham số -Recurse) thành thư mục "src-backup".
